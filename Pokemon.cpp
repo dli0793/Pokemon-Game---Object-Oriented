@@ -536,7 +536,8 @@ bool Pokemon::StartBattle()
 	while(health>0&&target->get_health()>0)
 	{
 		TakeHit(target->get_phys_dmg(),target->get_magic_dmg(),target->get_defense());
-		target->TakeHit(physical_damage,magical_damage,defense);
+		if(health>0)
+			target->TakeHit(physical_damage,magical_damage,defense);
 	}
 	if(health>0)
 		return true;

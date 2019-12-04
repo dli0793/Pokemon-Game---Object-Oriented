@@ -174,22 +174,23 @@ bool Model::Update()
     {
 		if((*it)->Update())
 			return true;
+		
 		if(dynamic_cast<Pokemon*>(*it)!=nullptr||dynamic_cast<Rival*>(*it)!=nullptr)
 		{
 			if(dynamic_cast<Pokemon*>(*it)!=nullptr)
 			{
 				if(!(dynamic_cast<Pokemon*>(*it))->IsAlive())
 				{
-					active_ptrs.remove((*it));
-					cout << "Dead object removed.\n";
+					it = active_ptrs.erase((it));
+					cout << "Dead pokemon removed.\n";
 				}
 			}
 			if(dynamic_cast<Rival*>(*it)!=nullptr)
 			{
 				if(!(dynamic_cast<Rival*>(*it))->IsAlive())
 				{
-					active_ptrs.remove((*it));
-					cout << "Dead object removed.\n";
+					it = active_ptrs.erase((it));
+					cout << "Dead rival removed.\n";
 				}
 			}
 		}
