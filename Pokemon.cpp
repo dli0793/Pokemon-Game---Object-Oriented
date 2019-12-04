@@ -207,11 +207,19 @@ void Pokemon::ShowStatus()
 		case IN_GYM:
 			cout << " inside Pokemon Gym " << (*current_gym).id_num << endl;
 			break;
+		case IN_ARENA:
+			cout << " inside Battle Arena " << (*current_arena).id_num << endl;
+			break;
 		case TRAINING_IN_GYM:
 			cout << " training in Pokemon Gym " << (*current_gym).id_num << endl;
 			break;
 		case RECOVERING_STAMINA:
 			cout << " recovering stamina in Pokemon Center " << (*current_center).id_num << endl;
+			break;
+		case BATTLE:
+			cout << " battling in Battle Arena " << (*current_arena).id_num << endl;
+			break;
+		case FAINTED:
 			break;
 		case EXHAUSTED:
 			break;	
@@ -234,6 +242,8 @@ bool Pokemon::Update()
 	unsigned int old;
 	if(isExhausted())
 		state = EXHAUSTED;
+	if(!IsAlive())
+		state = FAINTED;
 	switch(state)
 	{
 		case STOPPED:
@@ -366,6 +376,8 @@ bool Pokemon::Update()
 			return false;
 			break;
 		case FAINTED:
+			cout << name << " fainted do you will not see it. \n";
+			health = 0;
 			state = FAINTED;
 			return false;
 		case MOVING_TO_ARENA:
@@ -407,12 +419,15 @@ bool Pokemon::Update()
 				health = store_health;
 				state = IN_ARENA;
 				target->IsAlive();
+				current_arena->RemoveRival();
+				cout << "Congrats Master, you defeated one rival!\n";
 				return true;
 			}
 			else
 			{
 				state = FAINTED;
 				target->IsAlive();
+				cout << "What a shame Master, your Pokemon died!\n";
 				return false;
 			}
 			break;
@@ -461,6 +476,7 @@ Pokemon::Pokemon(string in_name, double speed, double hp, double phys_dmg, doubl
 	state = STOPPED;
 	this->speed = speed;
 	health = hp;
+	store_health = health;
 	physical_damage = phys_dmg;
 	magical_damage = magic_dmg;
 	defense = def;
@@ -478,44 +494,45 @@ bool Pokemon::IsAlive()
 void Pokemon::TakeHit(double physical_damage, double magical_damage, double defense)
 {
 	double choice = rand() % 2 == 0 ? physical_damage : magical_damage;
+	if(choice==physical_damage)
+		cout << "Physical damage hurts, Master!\n";
+	if(choice==magical_damage)
+		cout << "It is magic, Master!\n";
 	double damage = (100.0 - defense)/100 * choice;
 	health = health - damage;
-}	
+	cout << "Health: " << health <<endl;
+	cout << "Damage: " << damage <<endl;
+	cout << "***********" << endl <<endl;
+}
 
 /* This function will be called from StartBattle() function until either Pokemon
 or Rival has 0 or less than 0 health */
 
 void Pokemon::ReadyBattle(Rival *in_target)
 {
-	if(state==IN_ARENA&&current_arena->IsAbleToFight(pokemon_dollars,stamina)==true&&current_arena->IsBeaten()==false&&in_target->IsAlive()==true)
+	if(!isExhausted() && IsAlive() && is_in_arena && (*current_arena).IsAbleToFight(pokemon_dollars, stamina) && !(*current_arena).IsBeaten())
 	{
+		cout << display_code << id_num << ": Started to Battle at Battle Arena " << (*current_arena).id_num << endl;
 		target = in_target;
 		state = BATTLE;
 	}
-	else
-		state = IN_ARENA;
+	else if(isExhausted())
+	{
+		cout << display_code << id_num << ": I am exhausted so no more battling for me...\n";
+		state = EXHAUSTED;
+	}
+	else if(!is_in_arena)
+		cout << display_code << id_num << ": I can only battle in a Battle Arena!\n";
+	else if(!(*current_arena).IsAbleToFight(pokemon_dollars, stamina))
+		cout << display_code << id_num << ": Not enough stamina and/or money for training\n";
+	else if((*current_arena).IsBeaten())
+		cout << display_code << id_num << ": Cannot battle! This Battle Arena is already beaten!\n";
 }
 
 bool Pokemon::StartBattle()
 {
-	if(is_in_gym)
+	if(is_in_arena)
 		state = BATTLE;
-	if(!isExhausted() && IsAlive() && is_in_arena && (*current_arena).IsAbleToTrain(num_training_units, pokemon_dollars, stamina) && !(*current_gym).IsBeaten())
-	{
-		cout << display_code << id_num << ": Started to train at Pokemon Gym " << (*current_gym).id_num << " with " << num_training_units << " training units\n";
-		training_units_to_buy = min(num_training_units,(*current_gym).num_training_units_remaining);
-	}
-	else if(isExhausted())
-	{
-		cout << display_code << id_num << ": I am exhausted so no more training for me...\n";
-		state = EXHAUSTED;
-	}
-	else if(!is_in_gym)
-		cout << display_code << id_num << ": I can only train in a Pokemon Gym!\n";
-	else if(!(*current_gym).IsAbleToTrain(num_training_units, pokemon_dollars, stamina))
-		cout << display_code << id_num << ": Not enough stamina and/or money for training\n";
-	else if((*current_gym).IsBeaten())
-		cout << display_code << id_num << ": Cannot train! This Pokemon Gym is already beaten!\n";
 	while(health>0&&target->get_health()>0)
 	{
 		TakeHit(target->get_phys_dmg(),target->get_magic_dmg(),target->get_defense());
@@ -524,9 +541,8 @@ bool Pokemon::StartBattle()
 	if(health>0)
 		return true;
 	if(target->get_health()>0)
-		return false;
+		return false;	
 }
-
 
 static double GetRandomAmountofPokemonDollars()
 {

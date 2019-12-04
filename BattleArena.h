@@ -38,6 +38,7 @@ class BattleArena:public Building
 	bool Update();
 	bool IsBeaten();
 	void ShowStatus();
+	void RemoveRival();
 };
 
 #endif

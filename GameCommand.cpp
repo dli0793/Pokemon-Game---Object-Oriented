@@ -115,6 +115,7 @@ void DoBattleCommand(Model& model, int pokemon_id, int rival_id)
 	Rival* rivptr = model.GetRivalPtr(rival_id);
 	if(rivptr!=0&&pkptr!=0)
 	{
+		cout << "Advancing to next event.\n";
 		(*pkptr).ReadyBattle(rivptr);
 		cout << "Battling " << (*pkptr).GetName() << " with Rival " << endl;
 	}

@@ -17,8 +17,15 @@ Rival::Rival(string name, double speed, double hp, double phys_dmg,double magic_
 void Rival::TakeHit(double physical_damage, double magical_damage, double defense)
 {
 	double choice = rand() % 2 == 0 ? physical_damage : magical_damage;
+	if(choice==physical_damage)
+		cout << "Aaagh, no physical pain no gain!\n";
+	if(choice==magical_damage)
+		cout << "Ouch, I do not believe magic!\n";
 	double damage = (100.0 - defense)/100 * choice;
 	health = health - damage;
+	cout << "Health: " << health <<endl;
+	cout << "Damage: " << damage <<endl;
+	cout << "***********" << endl <<endl;
 }
 
 double Rival::get_phys_dmg()

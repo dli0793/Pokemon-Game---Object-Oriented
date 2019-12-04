@@ -106,6 +106,7 @@ int main()
 		cin >> id1;
 		cin >> id2;
 		DoBattleCommand(m1,id1,id2);
+		m1.Update();
 		break;
 		default:
 		cout << "Error";

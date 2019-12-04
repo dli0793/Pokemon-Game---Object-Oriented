@@ -57,6 +57,11 @@ bool BattleArena::IsAbleToFight(double budget, unsigned int stamina)
 		return false;
 }
 
+void BattleArena::RemoveRival()
+{
+	num_rivals_remaining--;
+}
+
 bool BattleArena::Update()
 {
 	int counter = 0;
