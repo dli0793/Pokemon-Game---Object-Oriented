@@ -198,6 +198,9 @@ void Pokemon::ShowStatus()
 		case MOVING_TO_GYM:
 			cout << " heading to Pokemon Gym" << (*current_gym).id_num << " at a speed of " << speed << " at each step of " << delta;
 			break;
+		case MOVING_TO_ARENA:
+			cout << " heading to Battle Arena" << (*current_arena).id_num << " at a speed of " << speed << " at each step of " << delta;
+			break;
 		case IN_CENTER:
 			cout << " inside Pokemon Center " << (*current_center).id_num << endl;
 			break;
@@ -495,6 +498,24 @@ void Pokemon::ReadyBattle(Rival *in_target)
 
 bool Pokemon::StartBattle()
 {
+	if(is_in_gym)
+		state = BATTLE;
+	if(!isExhausted() && IsAlive() && is_in_arena && (*current_arena).IsAbleToTrain(num_training_units, pokemon_dollars, stamina) && !(*current_gym).IsBeaten())
+	{
+		cout << display_code << id_num << ": Started to train at Pokemon Gym " << (*current_gym).id_num << " with " << num_training_units << " training units\n";
+		training_units_to_buy = min(num_training_units,(*current_gym).num_training_units_remaining);
+	}
+	else if(isExhausted())
+	{
+		cout << display_code << id_num << ": I am exhausted so no more training for me...\n";
+		state = EXHAUSTED;
+	}
+	else if(!is_in_gym)
+		cout << display_code << id_num << ": I can only train in a Pokemon Gym!\n";
+	else if(!(*current_gym).IsAbleToTrain(num_training_units, pokemon_dollars, stamina))
+		cout << display_code << id_num << ": Not enough stamina and/or money for training\n";
+	else if((*current_gym).IsBeaten())
+		cout << display_code << id_num << ": Cannot train! This Pokemon Gym is already beaten!\n";
 	while(health>0&&target->get_health()>0)
 	{
 		TakeHit(target->get_phys_dmg(),target->get_magic_dmg(),target->get_defense());

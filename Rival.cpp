@@ -11,6 +11,7 @@ Rival::Rival(string name, double speed, double hp, double phys_dmg,double magic_
 	magical_damage = magic_dmg;
 	defense = def;
 	state = ALIVE_RIVAL;
+	cout << "Rival constructed.\n";
 }
 
 void Rival::TakeHit(double physical_damage, double magical_damage, double defense)

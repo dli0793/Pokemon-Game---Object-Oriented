@@ -7,12 +7,12 @@ using namespace std;
 Model::Model()
 {
 	time = 0;
-	Pokemon* Pokemon1 = new Pokemon("Pikachu",1.0,23.0,3.0,6.0,12.0,1,'P',Point2D(5,1));
+	Pokemon* Pokemon1 = new Pokemon("Pikachu",2.0,23.0,3.0,6.0,12.0,1,'P',Point2D(5,1));
 	object_ptrs.push_back(Pokemon1);
 	active_ptrs.push_back(Pokemon1);
 	pokemon_ptrs.push_back(Pokemon1);
 	
-	Pokemon* Pokemon2 = new Pokemon("Bulbasaur",2.0,26.0,4.0,3.7,16.0,2,'P',Point2D(10, 1));
+	Pokemon* Pokemon2 = new Pokemon("Bulbasaur",1.0,26.0,4.0,3.7,16.0,2,'P',Point2D(10, 1));
 	object_ptrs.push_back(Pokemon2);
 	active_ptrs.push_back(Pokemon2);
 	pokemon_ptrs.push_back(Pokemon2);

@@ -37,7 +37,7 @@ class Pokemon:public GameObject
  	
 	double speed;
 	bool is_in_gym = false;
-	bool is_in_center = false;;
+	bool is_in_center = false;
 	unsigned int stamina;
 	unsigned int experience_points = 0;
 	double pokemon_dollars = 0;
@@ -58,8 +58,8 @@ class Pokemon:public GameObject
 	double magical_damage = 4;
 	double defense = 15;
 	Rival* target;
-	bool is_in_arena;
-	BattleArena * current_arena;
+	bool is_in_arena = false;
+	BattleArena * current_arena = NULL;
 
 	public:
 	
