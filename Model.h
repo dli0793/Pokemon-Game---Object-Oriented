@@ -2,6 +2,7 @@
 #define Model_INCLUDE
 #include <algorithm> 
 #include <iostream>
+#include <list>
 #include <string>
 #include "Point2D.h"
 #include "Vector2D.h"
@@ -11,6 +12,8 @@
 #include "Building.h"
 #include "GameObject.h"
 #include "View.h"
+#include "Rival.h"
+#include "BattleArena.h"
 using namespace std;
 
 class Model
@@ -19,25 +22,30 @@ class Model
  	
 	int time;
 	
-	
-	Pokemon * pokemon_ptrs[10];
-	int num_pokemon;
-	PokemonCenter * center_ptrs[10];
-	int num_centers;
-	PokemonGym* gym_ptrs[10];
-	int num_gyms;
-	GameObject * object_ptrs[10];
-	int num_objects;
+	list <Pokemon*> pokemon_ptrs;
+	//int num_pokemon;
+	list <PokemonCenter*> center_ptrs;
+	//int num_centers;
+	list <PokemonGym*> gym_ptrs;
+	//int num_gyms;
+	list <Rival*> rival_ptrs;
+	//int num_rivals;
+	list <GameObject*> object_ptrs;
+	list <GameObject*> active_ptrs;
+	//int num_objects;
+	list <BattleArena*> arena_ptrs;
+	//int num_arenas;
 	//Model(const Model& );
 	
 	public:
-	
 	
 	Model();
 	~Model();
 	Pokemon * GetPokemonPtr(int id);
 	PokemonCenter * GetPokemonCenterPtr(int id);
 	PokemonGym * GetPokemonGymPtr(int id);
+	Rival * GetRivalPtr(int id);
+	BattleArena * GetArenaPtr(int id);
 	bool Update();
 	void Display(View& view);
 	void ShowStatus();

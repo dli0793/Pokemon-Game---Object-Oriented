@@ -99,6 +99,24 @@ void Pokemon::StartMovingToGym(PokemonGym* gym)
 	}
 }
 
+void Pokemon::StartMovingToArena(BattleArena* arena)
+{
+	SetupDestination((*arena).location);
+	current_arena = arena;
+	if(isExhausted())
+	{
+		cout << display_code << id_num << ": I am exhausted so I shouldn't be going to the arena...\n";
+		state = EXHAUSTED;
+	}
+	else if((location.x==(*arena).location.x)&&(location.y==(*arena).location.y))
+		cout << display_code << id_num << ": I'm already at the Pokemon Battle Arena!\n";
+	else
+	{
+		cout << display_code << id_num << ": On my way to arena " << (*arena).id_num << endl;
+		state = MOVING_TO_ARENA;
+	}
+}
+
 void Pokemon::StartTraining(unsigned int num_training_units)
 {
 	if(is_in_gym)
@@ -201,6 +219,10 @@ void Pokemon::ShowStatus()
 	cout << "    Stamina: " << stamina << endl;
 	cout << "    Pokemon Dollars: " << pokemon_dollars << endl;
 	cout << "    Experience Points: " << experience_points << endl;
+	cout << "    Health: " << health << endl;
+	cout << "    Physical Damage: " << physical_damage << endl;
+	cout << "    Magical Damage: " << magical_damage << endl;
+	cout << "    Defense: " << defense << endl;
 }
 
 bool Pokemon::Update()
@@ -236,6 +258,11 @@ bool Pokemon::Update()
 					is_in_gym = false;
 					current_gym->RemoveOnePokemon();
 				}
+				if(is_in_arena)
+				{
+					is_in_arena = false;
+					current_arena->RemoveOnePokemon();
+				}
 				return false;				
 			}
 			break;
@@ -262,6 +289,11 @@ bool Pokemon::Update()
 				{
 					is_in_gym = false;
 					current_gym->RemoveOnePokemon();
+				}
+				if(is_in_arena)
+				{
+					is_in_arena = false;
+					current_arena->RemoveOnePokemon();
 				}
 				return false;
 			}
@@ -290,6 +322,11 @@ bool Pokemon::Update()
 					is_in_gym = false;
 					current_gym->RemoveOnePokemon();
 				}
+				if(is_in_arena)
+				{
+					is_in_arena = false;
+					current_arena->RemoveOnePokemon();
+				}
 				return false;
 			}
 			break;
@@ -297,6 +334,9 @@ bool Pokemon::Update()
 			return false;
 			break;
 		case IN_GYM:
+			return false;
+			break;
+		case IN_ARENA:
 			return false;
 			break;
 		case TRAINING_IN_GYM:
@@ -321,6 +361,57 @@ bool Pokemon::Update()
 			cout << name << " is exhausted so you will not see it. \n";
 			stamina = 0;
 			return false;
+			break;
+		case FAINTED:
+			state = FAINTED;
+			return false;
+		case MOVING_TO_ARENA:
+			if(UpdateLocation())
+			{
+				state = IN_ARENA;
+				is_in_arena = true;
+				current_arena->AddOnePokemon();
+				return true;
+			}
+			else
+			{	
+				state = MOVING_TO_ARENA;
+				stamina-=1;
+				pokemon_dollars+=GetRandomAmountofPokemonDollars();
+				if(is_in_center)
+				{
+					is_in_center = false;
+					current_center->RemoveOnePokemon();
+				}
+				if(is_in_gym)
+				{
+					is_in_gym = false;
+					current_gym->RemoveOnePokemon();
+				}
+				if(is_in_arena)
+				{
+					is_in_arena = false;
+					current_arena->RemoveOnePokemon();
+				}
+				return false;
+			}
+			break;
+		case BATTLE:
+			stamina -= (*current_arena).GetStaminaCost();
+			pokemon_dollars -= (*current_arena).GetDollarCost();
+			if(StartBattle())
+			{
+				health = store_health;
+				state = IN_ARENA;
+				target->IsAlive();
+				return true;
+			}
+			else
+			{
+				state = FAINTED;
+				target->IsAlive();
+				return false;
+			}
 			break;
 		default:
 			cout << "Error" << endl;
@@ -356,9 +447,70 @@ string Pokemon::GetName()
 	return name;
 }
 
+Pokemon::Pokemon(string in_name, double speed, double hp, double phys_dmg, double magic_dmg, double def, int in_id, char in_code, Point2D in_loc):GameObject(in_loc,in_id,'P')
+{
+	this->speed = speed;
+	name = in_name;
+	//display_code = in_code;
+	//id_num = in_id;
+	//location = in_loc;
+	stamina = 20;
+	state = STOPPED;
+	this->speed = speed;
+	health = hp;
+	physical_damage = phys_dmg;
+	magical_damage = magic_dmg;
+	defense = def;
+	cout << "Pokemon constructed.\n";
+}
+
+bool Pokemon::IsAlive()
+{
+	if(state!=FAINTED)
+		return true;
+	else if(state==FAINTED)
+		return false;
+}
+
+void Pokemon::TakeHit(double physical_damage, double magical_damage, double defense)
+{
+	double choice = rand() % 2 == 0 ? physical_damage : magical_damage;
+	double damage = (100.0 - defense)/100 * choice;
+	health = health - damage;
+}	
+
+/* This function will be called from StartBattle() function until either Pokemon
+or Rival has 0 or less than 0 health */
+
+void Pokemon::ReadyBattle(Rival *in_target)
+{
+	if(state==IN_ARENA&&current_arena->IsAbleToFight(pokemon_dollars,stamina)==true&&current_arena->IsBeaten()==false&&in_target->IsAlive()==true)
+	{
+		target = in_target;
+		state = BATTLE;
+	}
+	else
+		state = IN_ARENA;
+}
+
+bool Pokemon::StartBattle()
+{
+	while(health>0&&target->get_health()>0)
+	{
+		TakeHit(target->get_phys_dmg(),target->get_magic_dmg(),target->get_defense());
+		target->TakeHit(physical_damage,magical_damage,defense);
+	}
+	if(health>0)
+		return true;
+	if(target->get_health()>0)
+		return false;
+}
+
+
 static double GetRandomAmountofPokemonDollars()
 {
 	srand(time(NULL));
 	return (2.0) * ((double)rand()/(double)RAND_MAX);
 }
+
 

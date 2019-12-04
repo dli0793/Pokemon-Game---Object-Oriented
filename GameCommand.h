@@ -11,6 +11,7 @@
 #include "Building.h"
 #include "GameObject.h"
 #include "Model.h"
+#include "BattleArena.h"
 //#include "View.h"
 using namespace std;
 
@@ -22,6 +23,7 @@ void DoTrainInGymCommand(Model&, int , unsigned int );
 void DoRecoverInCenterCommand(Model& , int , unsigned int );
 void DoGoCommand(Model& , View& );
 void DoRunCommand(Model& , View& );
-
+void DoBattleCommand(Model& , int , int );
+void DoMoveToArenaCommand(Model& , int , int );
 
 #endif

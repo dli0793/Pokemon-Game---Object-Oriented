@@ -9,6 +9,8 @@
 #include "PokemonGym.h"
 #include "Building.h"
 #include "GameObject.h"
+#include "BattleArena.h"
+#include "Rival.h"
 using namespace std;
 
 enum PokemonStates 
@@ -67,6 +69,7 @@ class Pokemon:public GameObject
  	Pokemon(string in_name, int in_id, char in_code, unsigned int in_speed, Point2D in_loc);
 	void StartMoving(Point2D dest);
 	void StartMovingToCenter(PokemonCenter* center);
+	void StartMovingToArena(BattleArena* arena);
 	void StartMovingToGym(PokemonGym* gym);
 	void StartTraining(unsigned int num_training_units);
 	void StartRecoveringStamina(unsigned int num_stamina_points);
@@ -76,7 +79,7 @@ class Pokemon:public GameObject
 	void ShowStatus();
 	bool Update();
 	string GetName();
-	Pokemon(string , double , double , double , double , double , int in_id, char , Point2D in_loc ):GameObject(in_loc,in_id,'P');
+	Pokemon(string , double , double , double , double , double , int in_id, char , Point2D in_loc );//:GameObject(in_loc,in_id,'P');
 	bool IsAlive();
 	void TakeHit(double , double , double );
 	void ReadyBattle(Rival *in_target);

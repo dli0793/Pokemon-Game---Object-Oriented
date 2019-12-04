@@ -69,6 +69,12 @@ int main()
 		DoMoveToCenterCommand(m1,id1,id2);
 		m1.Update();
 		break;
+		case 'a':
+		cin >> id1;
+		cin >> id2;
+		DoMoveToArenaCommand(m1,id1,id2);
+		m1.Update();
+		break;
 		case 's':
 		cin >> id1;
 		DoStopCommand(m1,id1);
@@ -95,6 +101,11 @@ int main()
 		break;
 		case 'x':
 		DoRunCommand(m1, v);
+		break;
+		case 'b':
+		cin >> id1;
+		cin >> id2;
+		DoBattleCommand(m1,id1,id2);
 		break;
 		default:
 		cout << "Error";

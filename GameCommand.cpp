@@ -41,6 +41,19 @@ void DoMoveToGymCommand(Model& model, int pokemon_id, int gym_id)
 		cout << "Error: Please enter a valid command!\n";
 }
 
+void DoMoveToArenaCommand(Model& model, int pokemon_id, int arena_id)
+{
+	Pokemon* pkptr = model.GetPokemonPtr(pokemon_id);
+	BattleArena* arenaptr = model.GetArenaPtr(arena_id);
+	if(arenaptr!=0&&pkptr!=0)
+	{
+		(*pkptr).StartMovingToArena(arenaptr);
+		cout << "Moving " << (*pkptr).GetName() << " to arena " << arena_id << endl;
+	}
+	else
+		cout << "Error: Please enter a valid command!\n";
+}
+
 void DoStopCommand(Model& model, int pokemon_id)
 {
 	Pokemon* pkptr = model.GetPokemonPtr(pokemon_id);
@@ -95,3 +108,16 @@ void DoRunCommand(Model& model, View& view)
 	}
 	model.Display(view);
 }  
+
+void DoBattleCommand(Model& model, int pokemon_id, int rival_id)
+{
+	Pokemon* pkptr = model.GetPokemonPtr(pokemon_id);
+	Rival* rivptr = model.GetRivalPtr(rival_id);
+	if(rivptr!=0&&pkptr!=0)
+	{
+		(*pkptr).ReadyBattle(rivptr);
+		cout << "Battling " << (*pkptr).GetName() << " with Rival " << endl;
+	}
+	else
+		cout << "Error: Please enter a valid command!\n";
+}
