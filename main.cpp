@@ -11,6 +11,7 @@
 #include "Model.h"
 #include "GameCommand.h"
 #include "View.h"
+#include "Input_Handling.h"
 using namespace std;
 
 string getFileContents(ifstream&);
@@ -45,73 +46,114 @@ int main()
 	
 	cout << "Enter command: ";
 	cin >> cmd;
-	switch(cmd)
+	try
 	{
-		case 'm':
+		if(cmd!='m'&&cmd!='g'&&cmd!='c'&&cmd!='a'&&cmd!='s'&&cmd!='t'&&cmd!='r'&&cmd!='q'&&cmd!='v'&&cmd!='x'&&cmd!='b') // do the input, then check: is stream good?
+			throw Invalid_Input("Not a valid command"); // throw an exception
+		
+		switch(cmd)
 		{
+			case 'm':
+			{
+				cin >> id1;
+				cin >> x;
+				cin >> y;
+				if(id1!=0&&id1!=1&&id1!=2&&id1!=3&&id1!=4&&id1!=5&&id1!=6&&id1!=7&&id1!=8&&id1!=9)
+					throw Invalid_Input("Invalid id number");
+				if(!(x>=0)||!(x<=20))
+					throw Invalid_Input("Not a valid x coordinate value");
+				if(!(y>=0)||!(y<=20))
+					throw Invalid_Input("Not a valid y coordinate value");
+				Point2D p1(x,y);
+				DoMoveCommand(m1,id1,p1);
+				m1.Update();
+				break;
+			}
+			case 'g':
 			cin >> id1;
-			cin >> x;
-			cin >> y;
-			Point2D p1(x,y);
-			DoMoveCommand(m1,id1,p1);
+			cin >> id2;
+			if(id1!=0&&id1!=1&&id1!=2&&id1!=3&&id1!=4&&id1!=5&&id1!=6&&id1!=7&&id1!=8&&id1!=9)
+				throw Invalid_Input("Invalid id number");
+			if(id2!=0&&id2!=1&&id2!=2&&id2!=3&&id2!=4&&id2!=5&&id2!=6&&id2!=7&&id2!=8&&id2!=9)
+				throw Invalid_Input("Invalid id number");
+			DoMoveToGymCommand(m1,id1,id2);
 			m1.Update();
 			break;
+			case 'c':
+			cin >> id1;
+			cin >> id2;
+			if(id1!=0&&id1!=1&&id1!=2&&id1!=3&&id1!=4&&id1!=5&&id1!=6&&id1!=7&&id1!=8&&id1!=9)
+				throw Invalid_Input("Invalid id number");
+			if(id2!=0&&id2!=1&&id2!=2&&id2!=3&&id2!=4&&id2!=5&&id2!=6&&id2!=7&&id2!=8&&id2!=9)
+				throw Invalid_Input("Invalid id number");
+			DoMoveToCenterCommand(m1,id1,id2);
+			m1.Update();
+			break;
+			case 'a':
+			cin >> id1;
+			cin >> id2;
+			if(id1!=0&&id1!=1&&id1!=2&&id1!=3&&id1!=4&&id1!=5&&id1!=6&&id1!=7&&id1!=8&&id1!=9)
+				throw Invalid_Input("Invalid id number");
+			if(id2!=0&&id2!=1&&id2!=2&&id2!=3&&id2!=4&&id2!=5&&id2!=6&&id2!=7&&id2!=8&&id2!=9)
+				throw Invalid_Input("Invalid id number");
+			DoMoveToArenaCommand(m1,id1,id2);
+			m1.Update();
+			break;
+			case 's':
+			cin >> id1;
+			if(id1!=0&&id1!=1&&id1!=2&&id1!=3&&id1!=4&&id1!=5&&id1!=6&&id1!=7&&id1!=8&&id1!=9)
+				throw Invalid_Input("Invalid id number");
+			DoStopCommand(m1,id1);
+			m1.Update();
+			break;
+			case 't':
+			cin >> id1;
+			cin >> unit;
+			if(id1!=0&&id1!=1&&id1!=2&&id1!=3&&id1!=4&&id1!=5&&id1!=6&&id1!=7&&id1!=8&&id1!=9)
+				throw Invalid_Input("Invalid id number");
+			DoTrainInGymCommand(m1,id1,unit);
+			m1.Update();
+			break;
+			case 'r':
+			cin >> id1;
+			cin >> stamina;
+			if(id1!=0&&id1!=1&&id1!=2&&id1!=3&&id1!=4&&id1!=5&&id1!=6&&id1!=7&&id1!=8&&id1!=9)
+				throw Invalid_Input("Invalid id number");
+			DoRecoverInCenterCommand(m1,id1,stamina);
+			m1.Update();
+			break;
+			case 'q':
+			cout << "Game session ended. Thanks for playing. \n";
+			return 0;
+			break;
+			case 'v':
+			DoGoCommand(m1, v);
+			break;
+			case 'x':
+			DoRunCommand(m1, v);
+			break;
+			case 'b':
+			cin >> id1;
+			cin >> id2;
+			if(id1!=0&&id1!=1&&id1!=2&&id1!=3&&id1!=4&&id1!=5&&id1!=6&&id1!=7&&id1!=8&&id1!=9)
+				throw Invalid_Input("Invalid id number");
+			if(id2!=0&&id2!=1&&id2!=2&&id2!=3&&id2!=4&&id2!=5&&id2!=6&&id2!=7&&id2!=8&&id2!=9)
+				throw Invalid_Input("Invalid id number");
+			DoBattleCommand(m1,id1,id2);
+			m1.Update();
+			break;
+			default:
+			cout << "Error";
 		}
-		case 'g':
-		cin >> id1;
-		cin >> id2;
-		DoMoveToGymCommand(m1,id1,id2);
-		m1.Update();
-		break;
-		case 'c':
-		cin >> id1;
-		cin >> id2;
-		DoMoveToCenterCommand(m1,id1,id2);
-		m1.Update();
-		break;
-		case 'a':
-		cin >> id1;
-		cin >> id2;
-		DoMoveToArenaCommand(m1,id1,id2);
-		m1.Update();
-		break;
-		case 's':
-		cin >> id1;
-		DoStopCommand(m1,id1);
-		m1.Update();
-		break;
-		case 't':
-		cin >> id1;
-		cin >> unit;
-		DoTrainInGymCommand(m1,id1,unit);
-		m1.Update();
-		break;
-		case 'r':
-		cin >> id1;
-		cin >> stamina;
-		DoRecoverInCenterCommand(m1,id1,stamina);
-		m1.Update();
-		break;
-		case 'q':
-		cout << "Game session ended. Thanks for playing. \n";
-		return 0;
-		break;
-		case 'v':
-		DoGoCommand(m1, v);
-		break;
-		case 'x':
-		DoRunCommand(m1, v);
-		break;
-		case 'b':
-		cin >> id1;
-		cin >> id2;
-		DoBattleCommand(m1,id1,id2);
-		m1.Update();
-		break;
-		default:
-		cout << "Error";
-	}
 	counter++;
+	}
+	catch (Invalid_Input& except)
+	{
+		cout << "Invalid input - " << except.msg_ptr << endl;
+		continue;
+		// actions to be taken if the input is wrong
+	}
+	
 	}
 	
 	return 0;
