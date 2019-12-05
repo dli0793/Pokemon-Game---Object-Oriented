@@ -33,6 +33,7 @@ int main()
 	int id2;
 	int x;
 	int y;
+	char type;
 	unsigned int unit;
 	unsigned int stamina;
 	int counter = 0;
@@ -48,7 +49,7 @@ int main()
 	cin >> cmd;
 	try
 	{
-		if(cmd!='m'&&cmd!='g'&&cmd!='c'&&cmd!='a'&&cmd!='s'&&cmd!='t'&&cmd!='r'&&cmd!='q'&&cmd!='v'&&cmd!='x'&&cmd!='b') // do the input, then check: is stream good?
+		if(cmd!='m'&&cmd!='g'&&cmd!='c'&&cmd!='a'&&cmd!='s'&&cmd!='t'&&cmd!='r'&&cmd!='q'&&cmd!='v'&&cmd!='x'&&cmd!='b'&&cmd!='n') // do the input, then check: is stream good?
 			throw Invalid_Input("Not a valid command"); // throw an exception
 		
 		switch(cmd)
@@ -142,6 +143,23 @@ int main()
 			DoBattleCommand(m1,id1,id2);
 			m1.Update();
 			break;
+			case 'n':
+			cin >> type;
+			cin >> id1;
+			cin >> x;
+			cin >> y;
+			if(type!='g'&&type!='c'&&type!='p'&&type!='r')
+				throw Invalid_Input("Not a valid type name");
+			if(id1!=0&&id1!=1&&id1!=2&&id1!=3&&id1!=4&&id1!=5&&id1!=6&&id1!=7&&id1!=8&&id1!=9)
+				throw Invalid_Input("Invalid id number");
+			if(!(x>=0)||!(x<=20))
+				throw Invalid_Input("Not a valid x coordinate value");
+			if(!(y>=0)||!(y<=20))
+				throw Invalid_Input("Not a valid y coordinate value");
+			if(m1.CheckDupID(type,id1))
+				throw Invalid_Input("Duplicate id num use a different value");
+			m1.NewCommand(type,id1,x,y);
+			m1.Update();
 			default:
 			cout << "Error";
 		}

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <list>
 #include <string>
+#include <iterator>
 #include "Point2D.h"
 #include "Vector2D.h"
 #include "Pokemon.h"
@@ -51,7 +52,8 @@ class Model
 	void ShowStatus();
 	bool AllGymsBeaten();
 	bool AllPokemonExhausted();
-
+	void NewCommand(char ,int ,int ,int);
+	bool CheckDupID(char ,int);
 };
 
 

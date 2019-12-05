@@ -117,7 +117,7 @@ void DoBattleCommand(Model& model, int pokemon_id, int rival_id)
 	{
 		cout << "Advancing to next event.\n";
 		(*pkptr).ReadyBattle(rivptr);
-		cout << "Battling " << (*pkptr).GetName() << " with Rival " << endl;
+		cout << "Battling " << (*pkptr).GetName() << " with " << rivptr->GetName() << endl;
 	}
 	else
 		cout << "Error: Please enter a valid command!\n";

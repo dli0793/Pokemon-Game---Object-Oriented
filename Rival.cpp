@@ -48,6 +48,12 @@ double Rival::get_health()
 	return health;
 }
 
+string Rival::GetName()
+{
+	return name;
+}
+
+
 bool Rival::IsAlive() 
 {
     if(health < 0)

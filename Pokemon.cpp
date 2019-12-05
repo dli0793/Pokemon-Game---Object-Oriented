@@ -18,6 +18,9 @@ Pokemon::Pokemon()
 {
 	speed = 5;
 	stamina = 20;
+	current_arena = NULL;
+	current_gym = NULL;
+	current_center = NULL;
 	cout << "Pokemon default constructed." << endl;
 }
 
@@ -27,6 +30,9 @@ Pokemon::Pokemon(char in_code)
 	state = STOPPED;
 	display_code = in_code;
 	stamina = 20;
+	current_arena = NULL;
+	current_gym = NULL;
+	current_center = NULL;
 	cout << "Pokemon constructed.\n";
 }
 
@@ -39,6 +45,9 @@ Pokemon::Pokemon(string in_name, int in_id, char in_code, unsigned int in_speed,
 	location = in_loc;
 	stamina = 20;
 	state = STOPPED;
+	current_arena = NULL;
+	current_gym = NULL;
+	current_center = NULL;
 	cout << "Pokemon constructed.\n";
 }
 
@@ -120,39 +129,52 @@ void Pokemon::StartMovingToArena(BattleArena* arena)
 void Pokemon::StartTraining(unsigned int num_training_units)
 {
 	if(is_in_gym)
+	{
 		state = TRAINING_IN_GYM;
-	if(!isExhausted() && is_in_gym && (*current_gym).IsAbleToTrain(num_training_units, pokemon_dollars, stamina) && !(*current_gym).IsBeaten())
-	{
-		cout << display_code << id_num << ": Started to train at Pokemon Gym " << (*current_gym).id_num << " with " << num_training_units << " training units\n";
-		training_units_to_buy = min(num_training_units,(*current_gym).num_training_units_remaining);
+		if(!isExhausted() && is_in_gym && (*current_gym).IsAbleToTrain(num_training_units, pokemon_dollars, stamina) && !(*current_gym).IsBeaten())
+		{
+			cout << display_code << id_num << ": Started to train at Pokemon Gym " << (*current_gym).id_num << " with " << num_training_units << " training units\n";
+			training_units_to_buy = min(num_training_units,(*current_gym).num_training_units_remaining);
+		}
+		else if(isExhausted())
+		{
+			cout << display_code << id_num << ": I am exhausted so no more training for me...\n";
+			state = EXHAUSTED;
+		}
+		else if(!(*current_gym).IsAbleToTrain(num_training_units, pokemon_dollars, stamina))
+			cout << display_code << id_num << ": Not enough stamina and/or money for training\n";
+		else if((*current_gym).IsBeaten())
+			cout << display_code << id_num << ": Cannot train! This Pokemon Gym is already beaten!\n";
 	}
-	else if(isExhausted())
-	{
-		cout << display_code << id_num << ": I am exhausted so no more training for me...\n";
-		state = EXHAUSTED;
-	}
-	else if(!is_in_gym)
+	else
 		cout << display_code << id_num << ": I can only train in a Pokemon Gym!\n";
-	else if(!(*current_gym).IsAbleToTrain(num_training_units, pokemon_dollars, stamina))
-		cout << display_code << id_num << ": Not enough stamina and/or money for training\n";
-	else if((*current_gym).IsBeaten())
-		cout << display_code << id_num << ": Cannot train! This Pokemon Gym is already beaten!\n";
+	
 }
 
 void Pokemon::StartRecoveringStamina(unsigned int num_stamina_points)
 {
-	state = RECOVERING_STAMINA;
-	if((*current_center).CanAffordStaminaPoints(num_stamina_points, pokemon_dollars) && (*current_center).HasStaminaPoints() && is_in_center)
+	if(is_in_center)
 	{
-		cout << display_code << id_num << ": Started recovering " << num_stamina_points << " stamina point(s) " << " at PokemonCenter " << (*current_center).id_num <<endl;
-		stamina_points_to_buy = min(num_stamina_points,(*current_center).num_stamina_points_remaining);
+		state = RECOVERING_STAMINA;
+		
+		if((*current_center).CanAffordStaminaPoints(num_stamina_points, pokemon_dollars) && (*current_center).HasStaminaPoints() && is_in_center)
+		{
+			cout << display_code << id_num << ": Started recovering " << num_stamina_points << " stamina point(s) " << " at PokemonCenter " << (*current_center).id_num <<endl;
+			stamina_points_to_buy = min(num_stamina_points,(*current_center).num_stamina_points_remaining);
+		}
+		else if(isExhausted())
+		{
+			cout << display_code << id_num << ": I am too exhausted to even recover...\n";
+			state = EXHAUSTED;
+		}
+		else if(!(*current_center).CanAffordStaminaPoints(num_stamina_points, pokemon_dollars))
+			cout << display_code << id_num << ": Not enough money to recover stamina.\n";
+	
+		else if(!(*current_center).HasStaminaPoints())
+			cout << display_code << id_num << ": Cannot recover! No stamina points remaining in this Pokemon Center.\n";
 	}
-	else if(!(*current_center).CanAffordStaminaPoints(num_stamina_points, pokemon_dollars))
-		cout << display_code << id_num << ": Not enough money to recover stamina.\n";
-	else if(!(*current_center).HasStaminaPoints())
-		cout << display_code << id_num << ": Cannot recover! No stamina points remaining in this Pokemon Center.\n";
-	else if(!is_in_center)
-		cout << display_code << id_num << ": I can only recover stamina at a Pokemon Center!\n";		
+	else 
+		cout << display_code << id_num << ": I can only recover stamina at a Pokemon Center!\n";	
 }
 
 void Pokemon::Stop()
@@ -480,6 +502,9 @@ Pokemon::Pokemon(string in_name, double speed, double hp, double phys_dmg, doubl
 	physical_damage = phys_dmg;
 	magical_damage = magic_dmg;
 	defense = def;
+	current_arena = NULL;
+	current_gym = NULL;
+	current_center = NULL;
 	cout << "Pokemon constructed.\n";
 }
 
@@ -510,23 +535,26 @@ or Rival has 0 or less than 0 health */
 
 void Pokemon::ReadyBattle(Rival *in_target)
 {
-	if(!isExhausted() && IsAlive() && is_in_arena && (*current_arena).IsAbleToFight(pokemon_dollars, stamina) && !(*current_arena).IsBeaten())
+	if(is_in_arena)
 	{
-		cout << display_code << id_num << ": Started to Battle at Battle Arena " << (*current_arena).id_num << endl;
-		target = in_target;
-		state = BATTLE;
+		if(!isExhausted() && IsAlive() && is_in_arena && (*current_arena).IsAbleToFight(pokemon_dollars, stamina) && !(*current_arena).IsBeaten())
+		{
+			cout << display_code << id_num << ": Started to Battle at Battle Arena " << (*current_arena).id_num << endl;
+			target = in_target;
+			state = BATTLE;
+		}
+		else if(isExhausted())
+		{
+			cout << display_code << id_num << ": I am exhausted so no more battling for me...\n";
+			state = EXHAUSTED;
+		}
+		else if(!(*current_arena).IsAbleToFight(pokemon_dollars, stamina))
+			cout << display_code << id_num << ": Not enough stamina and/or money for training\n";
+		else if((*current_arena).IsBeaten())
+			cout << display_code << id_num << ": Cannot battle! This Battle Arena is already beaten!\n";
 	}
-	else if(isExhausted())
-	{
-		cout << display_code << id_num << ": I am exhausted so no more battling for me...\n";
-		state = EXHAUSTED;
-	}
-	else if(!is_in_arena)
+	else 
 		cout << display_code << id_num << ": I can only battle in a Battle Arena!\n";
-	else if(!(*current_arena).IsAbleToFight(pokemon_dollars, stamina))
-		cout << display_code << id_num << ": Not enough stamina and/or money for training\n";
-	else if((*current_arena).IsBeaten())
-		cout << display_code << id_num << ": Cannot battle! This Battle Arena is already beaten!\n";
 }
 
 bool Pokemon::StartBattle()

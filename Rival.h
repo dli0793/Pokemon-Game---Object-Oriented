@@ -44,6 +44,7 @@ class Rival:public GameObject
 	void ShowStatus();
 	bool IsAlive();
 	bool ShouldBeVisible();
+	string GetName();
 
 };
 

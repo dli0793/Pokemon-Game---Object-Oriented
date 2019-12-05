@@ -161,6 +161,85 @@ Rival* Model::GetRivalPtr(int id)
 	return 0;
 }
 
+void Model::NewCommand(char type,int id1,int x,int y)
+{
+	if(type=='r')
+	{
+		Rival* Rival1 = new Rival("RivalCreated",1.0,16.0,3.0,7.2,20.0,id1,Point2D(x,y)); //battlearena location
+		object_ptrs.push_back(Rival1);
+		active_ptrs.push_back(Rival1);
+		rival_ptrs.push_back(Rival1);
+	}
+	
+	if(type=='p')
+	{
+		Pokemon* Pokemon1 = new Pokemon("PokemonCreated",2.0,23.0,3.0,6.0,12.0,id1,'P',Point2D(x,y));
+		object_ptrs.push_back(Pokemon1);
+		active_ptrs.push_back(Pokemon1);
+		pokemon_ptrs.push_back(Pokemon1);
+	}
+	
+	if(type=='c')
+	{
+		PokemonCenter* PokemonCenter1 = new PokemonCenter(id1,1,100,Point2D(x, y));
+		object_ptrs.push_back(PokemonCenter1);
+		active_ptrs.push_back(PokemonCenter1);
+		center_ptrs.push_back(PokemonCenter1);
+	}
+	
+	if(type=='g')
+	{
+		PokemonGym* PokemonGym1 = new PokemonGym(10,1,2,3,id1,Point2D(x,y));
+		object_ptrs.push_back(PokemonGym1);
+		active_ptrs.push_back(PokemonGym1);
+		gym_ptrs.push_back(PokemonGym1);
+	}
+}
+
+bool Model::CheckDupID(char type,int id1)
+{
+	list <Rival*> :: iterator it; 
+	if(type=='r')
+	{
+		for(it=rival_ptrs.begin();it!=rival_ptrs.end();++it) 
+		{
+			if((*it)->GetId()==id1)
+				return true;		
+		}
+	}
+	
+	list <Pokemon*> :: iterator it1; 
+	if(type=='p')
+	{
+		for(it1=pokemon_ptrs.begin();it1!=pokemon_ptrs.end();++it1) 
+		{
+			if((*it1)->GetId()==id1)
+				return true;		
+		}
+	}
+	
+	list <PokemonCenter*> :: iterator it2; 
+	if(type=='c')
+	{
+		for(it2=center_ptrs.begin();it2!=center_ptrs.end();++it2) 
+		{
+			if((*it2)->GetId()==id1)
+				return true;		
+		}
+	}
+	
+	list <PokemonGym*> :: iterator it3; 
+	if(type=='g')
+	{
+		for(it3=gym_ptrs.begin();it3!=gym_ptrs.end();++it3) 
+		{
+			if((*it3)->GetId()==id1)
+				return true;		
+		}
+	}
+	return false;
+}
+	
 bool Model::Update()
 {
 	time++;
