@@ -575,8 +575,12 @@ bool Pokemon::StartBattle()
 
 static double GetRandomAmountofPokemonDollars()
 {
-	srand(time(NULL));
-	return (2.0) * ((double)rand()/(double)RAND_MAX);
+	/* srand(time(NULL));
+	return (2.0) * ((double)rand()/(double)RAND_MAX); */
+	double f_min = 0.0;
+    double f_max = 2.0;
+    double f = (double)rand() / RAND_MAX;
+    return f_min + f * (f_max - f_min);
 }
 
 

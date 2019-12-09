@@ -160,6 +160,7 @@ int main()
 				throw Invalid_Input("Duplicate id num use a different value");
 			m1.NewCommand(type,id1,x,y);
 			m1.Update();
+			break;
 			default:
 			cout << "Error";
 		}
